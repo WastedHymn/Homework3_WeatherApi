@@ -18,7 +18,10 @@ public class ApiUtils {
     public static final String AUTH_KEY = "&key=ef6795061fd94b61a7820245230502";
     public static final String CITY_NAME_ERROR = "A city name can only contain letters and '-'.";
     public static final String CITY_NAME_REGEX =
-            "[a-zA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœğĞşŞ\\s-]+$";
+            "^\\p{L}+$";//"[a-zA-ZàèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœğĞşŞ\\s-]+$";
+    public static final String MES_SUCCESSFUL_CURRENTFORECAST = "Current weather forecast.";
+    public static final String MES_SUCCESSFUL_WEEKLYFORECAST = "Weekly weather forecast.";
+    public static final String MES_SUCCESSFUL_MONTHLYFORECAST = "Monthly weather forecast.";
 
     private static Map<Integer, String> weatherCodeMap;
 
