@@ -1,6 +1,5 @@
 package com.patika.weatherapi.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patika.weatherapi.model.*;
 import com.patika.weatherapi.utils.ApiUtils;
@@ -17,17 +16,6 @@ public class WeatherService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
-
-    //Convert json response to POJO.
-    /*
-    private ForecastRoot getForecastRoot(String response) {
-        try {
-            return objectMapper.readValue(response, ForecastRoot.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    */
     //Get requested information from "Weather Api".
     private ForecastRoot getWeatherInfoFromApi(String requestURL) {
         return restTemplate.getForObject(requestURL, ForecastRoot.class);
@@ -49,10 +37,6 @@ public class WeatherService {
                         "q=" + lat + "," + lon +
                         ApiUtils.AUTH_KEY;
         return getWeatherInfoFromApi(requestURL);
-        /*
-        if (responseEntity.getStatusCode().is2xxSuccessful() && responseEntity.hasBody()) {
-            return responseEntity.getBody();
-        }*/
     }
 
     //Get weekly weather information by city name.
@@ -75,6 +59,7 @@ public class WeatherService {
         return getWeatherInfoFromApi(requestURL);
     }
 
+    //Get two weeks weather forecast.
     public ForecastRoot getTwoWeeksForecast(float lat, float lon) {
         String requestURL =
                 ApiUtils.WEATHER_API_URL +
@@ -84,28 +69,31 @@ public class WeatherService {
         return getWeatherInfoFromApi(requestURL);
     }
 
-    public ForecastRoot getTwoWeeksForecast(String cityName) {
+    //Get two weeks weather forecast.
+    public ForecastRoot getTwoWeeksForecast(String query) {
         String requestURL =
                 ApiUtils.WEATHER_API_URL +
-                        "q=" + cityName +
+                        "q=" + query +
                         "&days=14" +
                         ApiUtils.AUTH_KEY;
         return getWeatherInfoFromApi(requestURL);
     }
 
-    public ForecastRoot getWeatherForecast(String cityName, LocalDate date) {
-        String query = "&dt=" + ApiUtils.getDateAsString(date);
+    //Get specific date's weather forecast.
+    public ForecastRoot getWeatherForecast(String query, LocalDate date) {
+        String dateQuery = ApiUtils.getDateAsString(date);
         String requestURL = ApiUtils.WEATHER_FUTURE_API_URL +
-                "q=" + cityName +
-                query.trim() +
+                "q=" + query +
+                "&dt=" + dateQuery.trim() +
                 ApiUtils.AUTH_KEY;
         return getWeatherInfoFromApi(requestURL);
     }
 
-    public ForecastRoot getMonthlyWeatherForecast(String cityName) {
-        System.out.println("getting data..");
+    //Get monthly weather forecast.
+    public ForecastRoot getMonthlyWeatherForecast(String queryParameters) {
+        //System.out.println("getting data..");
         //Get two weeks weather forecast
-        ForecastRoot twoWeeksForecast = getTwoWeeksForecast(cityName);
+        ForecastRoot twoWeeksForecast = getTwoWeeksForecast(queryParameters);
         String date = twoWeeksForecast.getForecast()
                 .getForecastdays()
                 .get(13)
@@ -122,7 +110,7 @@ public class WeatherService {
         //Get next 16 days' weather forecasts.
         for (int i = 0; i < 16; i++) {
             //Get current date's weather forecast
-            ForecastRoot root = getWeatherForecast(cityName, currentDate);
+            ForecastRoot root = getWeatherForecast(queryParameters, currentDate);
             Condition weatherCondition = root.getForecast()
                     .getForecastdays()
                     .get(0)
