@@ -15,15 +15,13 @@ public class WeatherControllerAdvice {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<CustomErrorResult> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        //String name = ex.getName();
         String type = Objects.requireNonNull(ex.getRequiredType()).getSimpleName();
         Object value = ex.getValue();
-        //String errsome = ex.getValue().toString();
         String message = String.format("The Input should be a valid '%s' but the input '%s' isn't. Please enter valid values",
                 type, value);
         return new ResponseEntity<>(new CustomErrorResult(400, message), HttpStatus.BAD_REQUEST);
     }
-    
+
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity<CustomErrorResult> handleHttpClientError(HttpClientErrorException ex){
         int statusCode = ex.getRawStatusCode();
@@ -37,13 +35,11 @@ public class WeatherControllerAdvice {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<CustomErrorResult> handleRuntimeException(RuntimeException ex){
-        System.out.println("ERROR: " + ex.toString());
         return new ResponseEntity<>(new CustomErrorResult(500, "Something bad happened on the server side."), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<CustomErrorResult> handleNullPointerException(RuntimeException ex){
-        System.out.println("ERROR: " + ex.toString());
         return new ResponseEntity<>(new CustomErrorResult(500, "Something bad happened on the server side."), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
