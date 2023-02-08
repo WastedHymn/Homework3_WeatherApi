@@ -25,9 +25,15 @@ public class WeatherController {
     ) {
         ForecastRoot forecastRoot = weatherService.getCurrentWeather(lat, lon);
         if (forecastRoot != null) {
-            return new ResponseEntity<>(new SuccessDataResult(forecastRoot), HttpStatus.OK);
+            return new ResponseEntity<>(
+                    new SuccessDataResult(forecastRoot, ApiUtils.MES_SUCCESSFUL_CURRENTFORECAST),
+                    HttpStatus.OK
+            );
         }
-        return new ResponseEntity<>(new ErrorDataResult("Something went wrong."), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(
+                new ErrorDataResult("Something went wrong."),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
     }
 
     @GetMapping("/current/byCityName")
@@ -37,9 +43,14 @@ public class WeatherController {
             ForecastRoot forecastRoot = weatherService.getCurrentWeather(cityName);
             if (forecastRoot != null) {
                 return new ResponseEntity<>(
-                        new SuccessDataResult(forecastRoot), HttpStatus.OK);
+                        new SuccessDataResult(forecastRoot, ApiUtils.MES_SUCCESSFUL_CURRENTFORECAST),
+                        HttpStatus.OK
+                );
             }
-            return new ResponseEntity<>(new ErrorDataResult("Something went wrong."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(
+                    new ErrorDataResult("Something went wrong."),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
         return new ResponseEntity<>(
                 new CustomErrorDataResult(ApiUtils.CITY_NAME_ERROR, 400),
@@ -50,8 +61,11 @@ public class WeatherController {
     @GetMapping("/weekly/byCityName")
     public ResponseEntity<DataResult> getWeeklyForecast(@RequestParam(name = "cityName") String cityName) {
         if (cityName.matches(ApiUtils.CITY_NAME_REGEX)) {
-            ForecastRoot root = weatherService.getWeeklyForecast(cityName);
-            return new ResponseEntity<>(new SuccessDataResult(root), HttpStatus.OK);
+            ForecastRoot forecastRoot = weatherService.getWeeklyForecast(cityName);
+            return new ResponseEntity<>(
+                    new SuccessDataResult(forecastRoot, ApiUtils.MES_SUCCESSFUL_WEEKLYFORECAST),
+                    HttpStatus.OK
+            );
         }
 
         return new ResponseEntity<>(
@@ -60,11 +74,49 @@ public class WeatherController {
         );
     }
 
+    @GetMapping("/weekly/byLatitudeLongitude")
+    public ResponseEntity<DataResult> getWeeklyForecast(
+            @RequestParam(name = "lon") float lon,
+            @RequestParam(name = "lat") float lat
+    ) {
+        ForecastRoot forecastRoot = weatherService.getWeeklyForecast(lat, lon);
+        if (forecastRoot != null) {
+            return new ResponseEntity<>(
+                    new SuccessDataResult(forecastRoot, ApiUtils.MES_SUCCESSFUL_WEEKLYFORECAST),
+                    HttpStatus.OK
+            );
+        }
+        return new ResponseEntity<>(
+                new ErrorDataResult("Something went wrong."),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+
+    @GetMapping("/monthly/byLatitudeLongitude")
+    public ResponseEntity<DataResult> getMonthlyWeatherForecastHistory(
+            @RequestParam(name = "lon") float lon,
+            @RequestParam(name = "lat") float lat) {
+        ForecastRoot forecastRoot = weatherService.getMonthlyWeatherForecast(lat + "," + lon);
+        if (forecastRoot != null) {
+            return new ResponseEntity<>(
+                    new SuccessDataResult(forecastRoot, ApiUtils.MES_SUCCESSFUL_MONTHLYFORECAST),
+                    HttpStatus.OK
+            );
+        }
+        return new ResponseEntity<>(
+                new ErrorDataResult("Something went wrong."),
+                HttpStatus.INTERNAL_SERVER_ERROR
+        );
+    }
+
     @GetMapping("/monthly/byCityName")
-    public ResponseEntity<DataResult> getMonthlyWeatherForecastHistory(@RequestParam(name = "cityName") String cityName) {
+    public ResponseEntity<DataResult> getMonthlyWeatherForecast(@RequestParam(name = "cityName") String cityName) {
         if (cityName.matches(ApiUtils.CITY_NAME_REGEX)) {
             ForecastRoot root = weatherService.getMonthlyWeatherForecast(cityName);
-            return new ResponseEntity<>(new SuccessDataResult(root), HttpStatus.OK);
+            return new ResponseEntity<>(
+                    new SuccessDataResult(root, ApiUtils.MES_SUCCESSFUL_MONTHLYFORECAST),
+                    HttpStatus.OK
+            );
         }
 
         return new ResponseEntity<>(
